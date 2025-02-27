@@ -1,1 +1,111 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  
+  EC2Instance1:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: "ami-00bb6a80f01f03502"
+      InstanceType: t2.micro
+      Tags:
+        - Key: default
+          Value: Server-1
+
+  EC2Instance2:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: "ami-00bb6a80f01f03502"
+      InstanceType: t2.micro
+      Tags:
+        - Key: default
+          Value: Server-2
+
+  LambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: LambdaEC2ControlRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: EC2ControlPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'ec2:StartInstances'
+                  - 'ec2:StopInstances'
+                  - 'ec2:DescribeInstances'
+                Resource: '*'
+
+  LambdaStartServer2:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Handler: index.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: python3.9
+      Code:
+        ZipFile: |
+          import boto3
+          def handler(event, context):
+              ec2 = boto3.client('ec2')
+              ec2.start_instances(InstanceIds=['i-Server2InstanceID'])
+              return "Server 2 started"
+
+  LambdaStartServer1:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Handler: index.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: python3.9
+      Code:
+        ZipFile: |
+          import boto3
+          def handler(event, context):
+              ec2 = boto3.client('ec2')
+              ec2.start_instances(InstanceIds=['i-Server1InstanceID'])
+              return "Server 1 started"
+
+  CloudWatchRule1:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      EventPattern:
+        source:
+          - aws.ec2
+        detail-type:
+          - EC2 Instance State-change Notification
+        detail:
+          state:
+            - stopped
+      Targets:
+        - Arn: !GetAtt LambdaStartServer2.Arn
+          Id: StartServer2
+
+  CloudWatchRule2:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      EventPattern:
+        source:
+          - aws.ec2
+        detail-type:
+          - EC2 Instance State-change Notification
+        detail:
+          state:
+            - stopped
+      Targets:
+        - Arn: !GetAtt LambdaStartServer1.Arn
+          Id: StartServer1
+
+Outputs:
+  Server1InstanceId:
+    Value: !Ref EC2Instance1
+    Description: 'ID of Server 1'
+  Server2InstanceId:
+    Value: !Ref EC2Instance2
+    Description: 'ID of Server 2'
 
