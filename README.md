@@ -1,4 +1,5 @@
-![image](https://github.com/user-attachments/assets/7b0ee32d-b95d-4a1d-9e03-c305981a4b17)
+![image](https://github.com/user-attachments/assets/48d6a5bf-7b7c-4992-94e1-f203b61c57c1)
+
 
 # automate-Ec2-lambda-cloudwatch
 # AWS Auto-Restart Server Solution
