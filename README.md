@@ -1,4 +1,5 @@
-![image](https://github.com/user-attachments/assets/48d6a5bf-7b7c-4992-94e1-f203b61c57c1)
+![Screenshot 2025-02-27 205745](https://github.com/user-attachments/assets/c4799cc3-27bf-41a8-b5af-28179573adf4)
+
 
 
 # automate-Ec2-lambda-cloudwatch
