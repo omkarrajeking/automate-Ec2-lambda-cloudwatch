@@ -2,7 +2,7 @@
 
 
 
-# automate-Ec2-lambda-cloudwatch
+# automate-Ec2-lambda-terraform-cloudwatch
 # AWS Auto-Restart Server Solution
 
 This project sets up an automated system to restart EC2 instances in AWS using Lambda functions, CloudWatch rules, and IAM roles, all provisioned through AWS CloudFormation.
